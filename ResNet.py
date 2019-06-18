@@ -5,7 +5,7 @@ import torch.utils.model_zoo as model_zoo
 import torch
 from torch.autograd import Function
 
-__all__ = ['ResNet', 'resnet50','resnet101', 'MEDM']
+__all__ = ['ResNet', 'resnet50','resnet101', 'MEDM', 'MEDMR50']
 
 
 model_urls = {
@@ -186,6 +186,16 @@ class MEDM(nn.Module):
     def __init__(self, num_classes=12):
         super(MEDM, self).__init__()
         self.sharedNet = resnet101(False)
+        self.cls_fc = BnLabelClassifier(num_classes=num_classes)
+    def forward(self, x):
+        x = self.sharedNet(x)
+        clabel_pred = self.cls_fc(x)
+        return clabel_pred
+
+class MEDMR50(nn.Module):
+    def __init__(self, num_classes=12):
+        super(MEDMR50, self).__init__()
+        self.sharedNet = resnet50(False)
         self.cls_fc = BnLabelClassifier(num_classes=num_classes)
     def forward(self, x):
         x = self.sharedNet(x)
